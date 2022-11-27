@@ -8,8 +8,8 @@ var path = require("path");
  // pull information from HTML POST (express4)
 
 const hbs = require("express-handlebars");
-app.engine(".hbs",hbs.engine);
 app.use(express.static(path.join(__dirname, "public")));
+app.engine(".hbs", hbs.engine({ extname: ".hbs" }));
 app.set("view engine", "hbs");
 
 var port = process.env.PORT || 8000;
@@ -42,11 +42,11 @@ app.get("/api/restaurants", async function (req, res) {
 		if (err) res.send(err);
 		// res.json(restaurants)
 		res.render("restaurant",{
-			layout: "main",
+			layout: "main.hbs",
 			data: {restaurants},
 		});
 		// console.log(keys);
-	}).limit(3).lean();
+	}).skip(30).limit(3).lean();
 });
 
 app.post("api/restaurants", function (req, res) {
