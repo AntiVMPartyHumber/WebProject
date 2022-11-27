@@ -28,26 +28,28 @@ var Restaurant = require("./models/Restaurant");
 app.get("/api/restaurants", async function (req, res) {
 	//req.query to parsed query string parameteres
 	//req.params to parsed route parameters from path
-	// const page = urlParams.get('page')
-	// console.log(page);
+	let page = req.query.page;
+	let perPage = req.query.perPage;
+	let borough = req.query.borough;
 
-	// let page = req.query.page;
-	// let perPage = req.query.perPage;
-	// let borough = req.query.borough;
+	if(!page){
+        page = 0
+    }
 
-	// let articles = await Article.findAll().paginate
+    if(!perPage){
+        perPage = 20
+    }
 
 	Restaurant.find(function (err, restaurants) {
-		console.log(restaurants)
 		if (err) res.send(err);
-		// res.json(restaurants)
 		res.render("restaurant",{
 			layout: "main.hbs",
-			data: {restaurants},
+			data: restaurants,
 		});
-		// console.log(keys);
-	}).skip(30).limit(3).lean();
+	}).skip(page*perPage).limit(perPage).lean();
 });
+
+
 
 app.post("api/restaurants", function (req, res) {
 	console.log(req.body);
@@ -58,9 +60,9 @@ app.post("api/restaurants", function (req, res) {
 
 
 // delete restaurant based on _id number
-app.delete('/api/restaurants/:restaurantiId', function(req, res) {
-	console.log(req.params.restaurantiId);
-	let id = req.params.restaurantiId;
+app.delete('/api/restaurants/:restaurantId', function(req, res) {
+	console.log(req.params.restaurantId);
+	let id = req.params.restaurantId;
 	restaurant.remove({
 		_id : id
 	}, function(err) {
