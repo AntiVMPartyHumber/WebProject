@@ -5,7 +5,7 @@ var app = express();
 var database = require("./config/database");
 var bodyParser = require("body-parser");
 var path = require("path");
- // pull information from HTML POST (express4)
+// pull information from HTML POST (express4)
 
 const hbs = require("express-handlebars");
 app.use(express.static(path.join(__dirname, "public")));
@@ -32,45 +32,100 @@ app.get("/api/restaurants", async function (req, res) {
 	let perPage = req.query.perPage;
 	let borough = req.query.borough;
 
-	if(!page){
-        page = 0
-    }
+	if (!page) {
+		page = 0;
+	}
 
-    if(!perPage){
-        perPage = 20
-    }
+	if (!perPage) {
+		perPage = 20;
+	}
 
 	Restaurant.find(function (err, restaurants) {
 		if (err) res.send(err);
-		res.render("restaurant",{
+		res.render("restaurant", {
 			layout: "main.hbs",
 			data: restaurants,
 		});
-	}).skip(page*perPage).limit(perPage).lean();
+	})
+		.skip(page * perPage)
+		.limit(perPage)
+		.lean();
 });
-
-
 
 app.post("api/restaurants", function (req, res) {
 	console.log(req.body);
+	Restaurant.create(
+		{
+			address: [req.body.address],
+			building: req.body.building,
+			coord: [req.body.coord],
+			street: req.body.street,
+			zipcode: req.body.zipcode,
+			borough: req.body.borough,
+			cuisine: req.body.cuisine,
+			grades: [req.body.grades],
+			name: req.body.name,
+			restaurant_id: req.body.restaurant_id,
+		},
+		function (err, employee) {
+			if (err) res.send(err);
+
+			// get and return top 10 restaurants after newly record created
+			if (!page) {
+				page = 0;
+			}
+			Restaurant.find(function (err, restaurants) {
+				if (err) res.send(err);
+				res.render("restaurant", {
+					layout: "main.hbs",
+					data: restaurants,
+				});
+			})
+				.skip(page * 10)
+				.limit(10)
+				.lean();
+		}
+	);
 });
 
-
 //put  restaurant based on the _id number
+app.put('/api/restaurants/:restaurantId', function(req, res) {
+	// create mongose method to update an existing record into collection
+	let id = req.params.restaurantId;
+	var data = {
+		address: [req.body.address],
+			building: req.body.building,
+			coord: [req.body.coord],
+			street: req.body.street,
+			zipcode: req.body.zipcode,
+			borough: req.body.borough,
+			cuisine: req.body.cuisine,
+			grades: [req.body.grades],
+			name: req.body.name,
+			restaurant_id: req.body.restaurant_id
+	}
 
+	// save the user
+	Restaurant.findByIdAndUpdate(id, data, function(err, restaurant) {
+	if (err) throw err;
+
+	res.send('Successfully updated restaurants - '+restaurant.name);
+	});
+});
 
 // delete restaurant based on _id number
-app.delete('/api/restaurants/:restaurantId', function(req, res) {
+app.delete("/api/restaurants/:restaurantId", function (req, res) {
 	console.log(req.params.restaurantId);
 	let id = req.params.restaurantId;
-	restaurant.remove({
-		_id : id
-	}, function(err) {
-		if (err)
-			res.send(err);
-		else
-			res.send('Restaurant with'+  _id + 'has been Deleted.');	
-	});
+	restaurant.remove(
+		{
+			_id: id,
+		},
+		function (err) {
+			if (err) res.send(err);
+			else res.send("Restaurant with" + _id + "has been Deleted.");
+		}
+	);
 });
 
 app.listen(port);
