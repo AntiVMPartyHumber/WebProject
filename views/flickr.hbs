@@ -1,0 +1,20 @@
+<div class="header">
+    <h1>{{data.header}}</h1>
+</div>
+
+<!-- Photo Grid -->
+<div class="row">
+
+    {{#each data.photos}}
+    <div class="column">
+        {{#each this}}
+        <div class="fade-in-image" style="animation: fadeIn {{delay}}s">
+            <img src={{path}}>
+        </div>
+        {{/each}}
+    </div>
+    {{/each}}
+
+
+
+</div>
