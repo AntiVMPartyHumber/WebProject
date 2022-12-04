@@ -61,25 +61,40 @@ app.post('/api/restaurants', async function (req, res) {
     res.sendStatus(400)
     res.json({message: 'There is no data inputed'});
   }else{
-    const addNewRestaurant = new RestaurantModel({})
-
-	RestaurantModel.create(
-		{
-			address: req.body.address,
+	await RestaurantModel.create( {
+		address: {
 			building: req.body.building,
-			coord: req.body.coord,
-			street: req.body.street,
-			zipcode: req.body.zipcode,
-			borough: req.body.borough,
-			cuisine: req.body.cuisine,
-			grades: req.body.grades,
-			name: req.body.name,
-			restaurant_id: req.body.restaurant_id,
+			coord : [(req.body.coordx) , (req.body.coordy)],
+			street: req.query.street,
+			zipcode: req.query.zipcode
 		},
-		function (err, restaurants) {
-			if (err) res.send(err);
-		}
-	)};
+		borough: req.body.borough,
+		cuisine: req.body.cuisine,
+		grades: [{
+			date: req.body.date,
+			grade: req.body.grade,
+			score: req.body.score
+		}],
+		name: req.body.name,
+		restaurant_id: req.body.restaurant_id
+	}),function (err, addedRestaurant) {
+		if (err) res.send(err);
+	
+	console.log(`${addedRestaurant.name}` +'has been added')
+	RestaurantModel.findById(addedRestaurant.name, function (err,restaurant){
+		if (err) res.send(err);
+
+        res.render('restaurant', {
+			layout: 'main.hbs',
+			data: restaurant,
+		});
+	})
+	.skip(1)
+	.limit(1)
+	.lean();
+
+
+	}};
 });
 
 //put  restaurant based on the _id number
