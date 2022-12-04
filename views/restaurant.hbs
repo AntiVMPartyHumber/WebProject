@@ -1,18 +1,35 @@
 <h1>List of Restaurants</h1>
-<button id="next">Show Next 10</button>
+<button id='next' onclick="Showmore()">Show More</button>
+
 <Table border='1'>
-   <thead>
-    <tr>
-        {{#each data.[0]}}
-        <th>{{@key}}</th>
-        {{/each}}
-    </tr>
-     {{#each data}}
-    <tr>
-        {{#each this}}
-        <td>{{this}}</td>
-        {{/each}}
-    </tr>
-    {{/each}}
-  </thead>
+	<thead>
+		<tr>
+			{{#each data.[0]}}
+				<th>{{@key}}</th>
+			{{/each}}
+		</tr>
+		{{#each data}}
+			<tr>
+				<td>{{this._id}}</td>
+				<td>
+					<div>Building no: {{this.address.building}}</div>
+					<div>Coordinate: {{this.address.coord}}</div>
+					<div>Street: {{this.address.street}}</div>
+					<div>ZipCode: {{this.address.zipcode}}</div>
+
+				</td>
+				<td>{{this.borough}}</td>
+				<td>{{this.cuisine}}</td>
+				<td>{{#each this.grades}}
+						<ul>
+							<div>Date: {{this.date}}</div>
+							<div>Grade: {{this.grade}}</div>
+							<div>Score: {{this.score}} </div>
+						</ul>
+					{{/each}}</td>
+				<td>{{this.name}}</td>
+				<td>{{this.restaurant_id}}</td>
+			</tr>
+		{{/each}}
+	</thead>
 </Table>
