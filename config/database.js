@@ -1,3 +1,3 @@
 module.exports = {
-    url : "mongodb+srv://admin:admin@cluster0.r6pssxj.mongodb.net/sample_restaurants" //Andreas Atlas
+    url : "mongodb+srv://CaptainPotato:Ankit2778@cluster0.qwgzsb1.mongodb.net/sample_restaurants" //Andreas Atlas
 };

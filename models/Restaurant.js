@@ -20,6 +20,8 @@ RestaurantSchema = new Schema({
   grades: [ReviewSchema],
   name: String,
   restaurant_id: String,
+  thumbId: String,
+  
 });
 
 var RestaurantModel = mongoose.model("Restaurant", RestaurantSchema);
