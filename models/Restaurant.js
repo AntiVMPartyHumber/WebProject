@@ -24,7 +24,7 @@ var RestaurantSchema = new Schema({
 	restaurant_id: String,
 });
 
-var Restaurant = mongoose.model('Restaurant', RestaurantSchema);
+var RestaurantModel = mongoose.model('Restaurant', RestaurantSchema);
 var ReviewModel = mongoose.model('Review', ReviewSchema);
 
-module.exports = { Restaurant, ReviewModel };
+module.exports = { RestaurantModel, ReviewModel };

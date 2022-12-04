@@ -24,7 +24,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 // db.initialize();
 mongoose.connect(database.url);
 
-var { Restaurant } = require('./models/Restaurant');
+var { RestaurantModel } = require('./models/Restaurant');
 var { ReviewModel } = require('./models/Restaurant');
 
 //get all restaurant data from db
@@ -43,7 +43,7 @@ app.get('/api/restaurants', async function (req, res) {
 		perPage = 20;
 	}
 
-	Restaurant.find(function (err, restaurants) {
+	RestaurantModel.find(function (err, restaurants) {
 		if (err) res.send(err);
 		res.render('restaurant', {
 			layout: 'main.hbs',
@@ -55,40 +55,31 @@ app.get('/api/restaurants', async function (req, res) {
 		.lean();
 });
 
-app.post('api/restaurants', async function (req, res) {
+app.post('/api/restaurants', async function (req, res) {
 	console.log(req.body);
-	Restaurant.create(
+  if (!req.body ){
+    res.sendStatus(400)
+    res.json({message: 'There is no data inputed'});
+  }else{
+    const addNewRestaurant = new RestaurantModel({})
+
+	RestaurantModel.create(
 		{
-			address: [req.body.address],
+			address: req.body.address,
 			building: req.body.building,
-			coord: [req.body.coord],
+			coord: req.body.coord,
 			street: req.body.street,
 			zipcode: req.body.zipcode,
 			borough: req.body.borough,
 			cuisine: req.body.cuisine,
-			grades: [req.body.grades],
+			grades: req.body.grades,
 			name: req.body.name,
 			restaurant_id: req.body.restaurant_id,
 		},
-		function (err, employee) {
+		function (err, restaurants) {
 			if (err) res.send(err);
-
-			// get and return top 10 restaurants after newly record created
-			if (!page) {
-				page = 0;
-			}
-			Restaurant.find(function (err, restaurants) {
-				if (err) res.send(err);
-				res.render('restaurant', {
-					layout: 'main.hbs',
-					data: restaurants,
-				});
-			})
-				.skip(page * 10)
-				.limit(10)
-				.lean();
 		}
-	);
+	)};
 });
 
 //put  restaurant based on the _id number
