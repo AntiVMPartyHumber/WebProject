@@ -54,6 +54,30 @@ app.get('/api/restaurants', async function (req, res) {
 		.limit(perPage)
 		.lean();
 });
+//using form to populate page,perpage,borough
+app
+.route('/api/search')
+.get((req,res)=>{
+	res.render('restaurantseach',{
+		layout: 'main.hbs',
+	})
+})
+.post((req,res)=>{
+	let page = req.body.page;
+	let perPage = req.body.perPage;
+	let borough = req.body.borough;
+
+	RestaurantModel.find(function (err, restaurants) {
+		if (err) res.send(err);
+		res.render('restaurant', {
+			layout: 'main.hbs',
+			data: restaurants,
+		});
+	})
+		.skip(page * perPage)
+		.limit(perPage)
+		.lean();
+});
 
 app.post('/api/restaurants', async function (req, res) {
 	console.log(req.body);
