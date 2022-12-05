@@ -9,8 +9,11 @@ var bodyParser = require("body-parser");
 var path = require("path");
 var cookieSession = require("cookie-session");
 const crypto = require("crypto");
+const multer = require("multer");
+
 //const router = express.Router();
 //const serverless = require("serverless-http");
+const { uploadImage } = require("./imgur");
 
 const { downloadRestaurantThumb, searchPhotos } = require("./imageUtils");
 var restaurantModels = require("./models/Restaurant");
@@ -67,6 +70,19 @@ app.use(
   })
 );
 
+const storage = multer.diskStorage({
+  destination: "./public/images/imagur_upstream",
+  filename: function (req, file, cb) {
+    // we write the filename as the current date down to the millisecond
+    // in a large web service this would possibly cause a problem if two people
+    // uploaded an image at the exact same time. A better way would be to use GUID's for filenames.
+    // this is a simple example.
+    console.log(`filename : ${Date.now() + path.extname(file.originalname)}`)
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 //get all restaurant data from db
 app.get("/api/restaurants", async function (req, res) {
   //req.query to parsed query string parameteres
@@ -120,12 +136,15 @@ app
       .lean();
   });
 
-app.post("/api/restaurants", async function (req, res) {
+app.post("/api/restaurants", upload.single("photo"), async function (req, res) {
   console.log(req.body);
   if (!req.body) {
     res.sendStatus(400);
     res.json({ message: "There is no data inputed" });
   } else {
+    const thumbId = await uploadImage(req.file.path)
+    console.log(`thumb uplaoded ${thumbId}`)
+
     await RestaurantModel.create({
       address: {
         building: req.body.building,
@@ -144,6 +163,7 @@ app.post("/api/restaurants", async function (req, res) {
       ],
       name: req.body.name,
       restaurant_id: req.body.restaurant_id,
+      thumbId: thumbId
     }),
       function (err, addedRestaurant) {
         if (err) res.send(err);
