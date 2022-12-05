@@ -4,27 +4,29 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ReviewSchema = new Schema({
-	date: Date,
-	grade: String,
-	score: Number,
+ReviewSchema = new Schema({
+  date: Date,
+  grade: String,
+  score: Number,
 });
 
-var RestaurantSchema = new Schema({
-	address: {
-		building: String,
-		coord: [Number],
-		street: String,
-		zipcode: String,
-	},
-	borough: String,
-	cuisine: String,
-	grades: [ReviewSchema],
-	name: String,
-	restaurant_id: String,
+RestaurantSchema = new Schema({
+  address: {
+    building: String,
+    coord: [Number],
+    street: String,
+    zipcode: String,
+  },
+  borough: String,
+  cuisine: String,
+  grades: [ReviewSchema],
+  name: String,
+  restaurant_id: String,
+  thumbId: String,
+  
 });
 
-var RestaurantModel = mongoose.model('Restaurant', RestaurantSchema);
-var ReviewModel = mongoose.model('Review', ReviewSchema);
+var RestaurantModel = mongoose.model("Restaurant", RestaurantSchema);
+var ReviewModel = mongoose.model("Review", ReviewSchema);
 
 module.exports = { RestaurantModel, ReviewModel };

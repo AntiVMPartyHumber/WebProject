@@ -1,0 +1,64 @@
+<header>
+
+    <div class="container">
+
+        <div class="profile">
+
+            <div class="profile-image">
+
+                <img src={{data.thumb}} alt="">
+
+            </div>
+
+            <div class="profile-user-settings">
+
+                <h1 class="profile-user-name">{{data.name}}</h1>
+
+                <button id="edit" title="{{getEditHint data.isCreator}}" {{#unless data.isCreator}} disabled {{/unless}}
+                    class="btn profile-edit-btn">Edit Restaurant</button>
+
+                <button id="delete" title="{{getDeleteHint data.isCreator}}" {{#unless data.isCreator}} disabled
+                    {{/unless}} class="btn profile-settings-btn"><i class="fa fa-trash"></i></button>
+
+            </div>
+
+            <div class="profile-stats">
+
+                <ul>
+                    <li>Cuising: <span class="profile-stat-count">{{data.cuisine}}</span></li>
+                    <li>Avg. grade: <span class="profile-stat-count">{{data.avgGrade}}</span> </li>
+                    <li>Address: <span class="profile-stat-count">{{data.address}}</span></li>
+                </ul>
+
+            </div>
+
+            <div class="profile-bio">
+
+                <p><span class="profile-real-name">{{data.name}}</span>{{data.shortDescription}}</p>
+
+            </div>
+
+        </div>
+        <!-- End of profile section -->
+
+    </div>
+    <!-- End of container -->
+
+</header>
+
+<main>
+    <!-- Photo Grid -->
+    <div class="row">
+
+        {{#each data.photos}}
+        <div class="column">
+            {{#each this}}
+            <div class="fade-in-image" style="animation: fadeIn {{delay}}s">
+                <img src={{path}}>
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+
+
+</main>

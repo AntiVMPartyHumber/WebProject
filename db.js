@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var database = require("./config/database");
+var database = require("../config/database");
 
 async function initialize() {
     console.log("connection string...");
