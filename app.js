@@ -68,15 +68,6 @@ app.use(
   })
 );
 
-app.use(
-  cookieSession({
-    name: "session",
-    keys: [process.env.SECRETKEY],
-    // Cookie Options
-    maxAge: 365 * 24 * 60 * 60 * 1000, // 24 hours
-  })
-);
-
 //get all restaurant data from db
 app.get('/api/restaurants', async function (req, res) {
 	//req.query to parsed query string parameteres
@@ -104,6 +95,7 @@ app.get('/api/restaurants', async function (req, res) {
 		.limit(perPage)
 		.lean();
 });
+
 //using form to populate page,perpage,borough
 app
 .route('/api/search')
@@ -196,6 +188,21 @@ app.put('/api/restaurants/:restaurantId', function (req, res) {
 	});
 });
 
+//Put from restaurant detailswebpage
+// app.put("/api/restaurants/:restaurantiId", async function (req, res) {
+//   let id = req.params.restaurantiId;
+//   console.log(`Query ${req.query}`);
+  
+//   console.log(`request to update ${id}`);
+
+//   const restaurant = await restaurantModels.RestaurantModel.findById(id).exec();
+
+//   if (restaurant) {
+//     res.send({ updated: "ABC restaurant" });
+//   } else {
+//     res.send({ error: "delete faile" });
+//   }
+// });
 
 //TODO Check if user is the creator, then only delete is possible
 app.delete("/api/restaurants/:restaurantiId", async function (req, res) {
@@ -246,7 +253,7 @@ app.get("/api/restaurants/:id", async function (req, res) {
       avgGrade: `A`,
       address: `${restaurant.address.building}, ${restaurant.address.street}, ${restaurant.borough} ${restaurant.address.zipcode}`,
       shortDescription: restaurant.shortDescription,
-      isCreator: true,
+      isCreator: isCallerCreator,
       photos: [
         photos.slice(0, photos.length / 2).map((item) => {
           return { path: item.localPath, delay: getRandomInt(10) };
