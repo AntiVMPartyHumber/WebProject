@@ -1,4 +1,15 @@
 /** @format */
+/**************************
+*
+* ITE5315 – Project
+* I declare that this assignment is my own work in accordance with Humber Academic Policy.
+* No part of this assignment has been copied manually or electronically from any other source
+* (including web sites) or distributed to other students.
+*
+* Group member Name: Andreas Hartanto Student IDs: N01468650 Date: 5 Dec, 2022
+* Group member Name: Ankitgiri Gusai Student IDs: N01494551 Date: 5 Dec, 2022
+**************************
+*/
 
 var express = require("express");
 var mongoose = require("mongoose");
@@ -85,13 +96,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 //get all restaurant data from db
 app.get("/api/restaurants", async function (req, res) {
-
-  if (req.session.isNew) {
-    const uuid = crypto.randomUUID();
-    console.log(`new user created ${uuid}`);
-    req.session.userToken = uuid;
-  }
-
   //req.query to parsed query string parameteres
   //req.params to parsed route parameters from path
   let page = req.query.page;
@@ -100,17 +104,19 @@ app.get("/api/restaurants", async function (req, res) {
 
   if (!page) {
     page = 0;
+  }else{
+    page = parseInt(page)+1;
   }
 
   if (!perPage) {
-    perPage = 20;
+    perPage = 10;
   }
 
   RestaurantModel.find(function (err, restaurants) {
     if (err) res.send(err);
     res.render("restaurant", {
       layout: "main.hbs",
-      data: restaurants,
+      data: {restaurants:restaurants, currentPage: page},
     });
   })
     .skip(page * perPage)

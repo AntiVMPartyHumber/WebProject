@@ -1,13 +1,14 @@
 <h1>List of Restaurants</h1>
-<button id='next' onclick='Showmore()'>Show More</button>
+<input type="button" onclick="location.href='/api/restaurants?page={{data.currentPage}}';" value="Show More" />
+{{!-- <button id='next' onclick='Showmore()'>Show More</button> --}}
 <Table border='1' id="restaurant_table">
 	<thead>
 		<tr>
-			{{#each data.[0]}}
+			{{#each data.restaurants.[0]}}
 				<th>{{@key}}</th>
 			{{/each}}
 		</tr>
-		{{#each data}}
+		{{#each data.restaurants}}
 			<tr>
 				<td>  <a href="/api/restaurants/{{this._id}}">{{this._id}}</a> </td>
 				<td>
