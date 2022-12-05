@@ -77,7 +77,7 @@ const storage = multer.diskStorage({
     // in a large web service this would possibly cause a problem if two people
     // uploaded an image at the exact same time. A better way would be to use GUID's for filenames.
     // this is a simple example.
-    console.log(`filename : ${Date.now() + path.extname(file.originalname)}`)
+    console.log(`filename : ${Date.now() + path.extname(file.originalname)}`);
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
@@ -85,6 +85,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 //get all restaurant data from db
 app.get("/api/restaurants", async function (req, res) {
+
+  if (req.session.isNew) {
+    const uuid = crypto.randomUUID();
+    console.log(`new user created ${uuid}`);
+    req.session.userToken = uuid;
+  }
+
   //req.query to parsed query string parameteres
   //req.params to parsed route parameters from path
   let page = req.query.page;
@@ -142,8 +149,15 @@ app.post("/api/restaurants", upload.single("photo"), async function (req, res) {
     res.sendStatus(400);
     res.json({ message: "There is no data inputed" });
   } else {
-    const thumbId = await uploadImage(req.file.path)
-    console.log(`thumb uplaoded ${thumbId}`)
+    if (req.session.isNew) {
+      const uuid = crypto.randomUUID();
+      console.log(`new user created ${uuid}`);
+      req.session.userToken = uuid;
+    }
+    //req.session.isCreator = true;
+
+    const thumbId = await uploadImage(req.file.path);
+    console.log(`thumb uplaoded ${thumbId}`);
 
     await RestaurantModel.create({
       address: {
@@ -163,7 +177,8 @@ app.post("/api/restaurants", upload.single("photo"), async function (req, res) {
       ],
       name: req.body.name,
       restaurant_id: req.body.restaurant_id,
-      thumbId: thumbId
+      thumbId: thumbId,
+      creatorId: req.session.userToken,
     }),
       function (err, addedRestaurant) {
         if (err) res.send(err);

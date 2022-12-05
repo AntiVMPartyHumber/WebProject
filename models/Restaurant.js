@@ -23,7 +23,7 @@ RestaurantSchema = new Schema({
   name: String,
   restaurant_id: String,
   thumbId: String,
-  
+  creatorId: String
 });
 
 var RestaurantModel = mongoose.model("Restaurant", RestaurantSchema);
