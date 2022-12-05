@@ -101,6 +101,7 @@ app.get("/api/restaurants", async function (req, res) {
   let page = req.query.page;
   let perPage = req.query.perPage;
   let borough = req.query.borough;
+  console.log(req.session.userToken)
 
   if (!page) {
     page = 0;
@@ -111,7 +112,8 @@ app.get("/api/restaurants", async function (req, res) {
   if (!perPage) {
     perPage = 10;
   }
-
+  //To search new data posted
+// {name:"Humber"}
   RestaurantModel.find(function (err, restaurants) {
     if (err) res.send(err);
     res.render("restaurant", {
@@ -136,12 +138,15 @@ app
     let page = req.body.page;
     let perPage = req.body.perPage;
     let borough = req.body.borough;
+    
 
-    RestaurantModel.find(function (err, restaurants) {
+    RestaurantModel.find({'borough': borough},function (err, restaurants) {
+      console.log(borough)
+      console.log(restaurants)
       if (err) res.send(err);
       res.render("restaurant", {
         layout: "main.hbs",
-        data: restaurants,
+        data: {restaurants:restaurants, currentPage: page},
       });
     })
       .skip(page * perPage)
@@ -201,8 +206,6 @@ app.post("/api/restaurants", upload.single("photo"), async function (req, res) {
             });
           }
         )
-          .skip(1)
-          .limit(1)
           .lean();
       };
   }
