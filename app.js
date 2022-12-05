@@ -7,6 +7,9 @@ var bodyParser = require("body-parser");
 var path = require("path");
 var cookieSession = require("cookie-session");
 const crypto = require("crypto");
+//const router = express.Router();
+//const serverless = require("serverless-http");
+
 
 const { downloadRestaurantThumb, searchPhotos } = require("./imageUtils");
 var restaurantModels = require("./models/Restaurant");
@@ -191,6 +194,9 @@ app.get("/api/restaurants/:id", async function (req, res) {
   }
 });
 
+
+//app.use(`/.netlify/functions/api`, router);
+
 const isCreator = (req, restaurant) => {
   console.log(
     `${req.session.userToken} ${restaurant.creatorId} ${
@@ -205,3 +211,5 @@ function getRandomInt(max) {
 
 app.listen(port);
 console.log("App listening on port : " + port);
+// module.exports = app;
+// module.exports.handler = serverless(app);
