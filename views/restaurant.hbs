@@ -1,6 +1,6 @@
 <h1>List of Restaurants</h1>
 <button id='next' onclick='Showmore()'>Show More</button>
-<Table border='1'>
+<Table border='1' id="restaurant_table">
 	<thead>
 		<tr>
 			{{#each data.[0]}}
@@ -9,7 +9,7 @@
 		</tr>
 		{{#each data}}
 			<tr>
-				<td>{{this._id}}</td>
+				<td>  <a href="/api/restaurants/{{this._id}}">{{this._id}}</a> </td>
 				<td>
 					<div>Building no: {{this.address.building}}</div>
 					<div>Coordinate: {{this.address.coord}}</div>

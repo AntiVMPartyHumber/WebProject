@@ -93,4 +93,11 @@ $(document).ready(function () {
       });
     },
   });
+
+
+  
+  // $('#restaurant_table td').click(function() {
+  //   alert("HTML: " +$(this).html());
+    
+  // });
 });

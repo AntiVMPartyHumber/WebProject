@@ -1,8 +1,8 @@
 /** @format */
 
-var express = require('express');
-var mongoose = require('mongoose');
-var cors = require('cors');
+var express = require("express");
+var mongoose = require("mongoose");
+var cors = require("cors");
 var app = express();
 var database = require("./config/database");
 var bodyParser = require("body-parser");
@@ -11,7 +11,6 @@ var cookieSession = require("cookie-session");
 const crypto = require("crypto");
 //const router = express.Router();
 //const serverless = require("serverless-http");
-
 
 const { downloadRestaurantThumb, searchPhotos } = require("./imageUtils");
 var restaurantModels = require("./models/Restaurant");
@@ -56,8 +55,8 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" })); // parse applica
 // db.initialize();
 mongoose.connect(database.url);
 
-var { RestaurantModel } = require('./models/Restaurant');
-var { ReviewModel } = require('./models/Restaurant');
+var { RestaurantModel } = require("./models/Restaurant");
+var { ReviewModel } = require("./models/Restaurant");
 
 app.use(
   cookieSession({
@@ -69,130 +68,135 @@ app.use(
 );
 
 //get all restaurant data from db
-app.get('/api/restaurants', async function (req, res) {
-	//req.query to parsed query string parameteres
-	//req.params to parsed route parameters from path
-	let page = req.query.page;
-	let perPage = req.query.perPage;
-	let borough = req.query.borough;
+app.get("/api/restaurants", async function (req, res) {
+  //req.query to parsed query string parameteres
+  //req.params to parsed route parameters from path
+  let page = req.query.page;
+  let perPage = req.query.perPage;
+  let borough = req.query.borough;
 
-	if (!page) {
-		page = 0;
-	}
+  if (!page) {
+    page = 0;
+  }
 
-	if (!perPage) {
-		perPage = 20;
-	}
+  if (!perPage) {
+    perPage = 20;
+  }
 
-	RestaurantModel.find(function (err, restaurants) {
-		if (err) res.send(err);
-		res.render('restaurant', {
-			layout: 'main.hbs',
-			data: restaurants,
-		});
-	})
-		.skip(page * perPage)
-		.limit(perPage)
-		.lean();
+  RestaurantModel.find(function (err, restaurants) {
+    if (err) res.send(err);
+    res.render("restaurant", {
+      layout: "main.hbs",
+      data: restaurants,
+    });
+  })
+    .skip(page * perPage)
+    .limit(perPage)
+    .lean();
 });
 
 //using form to populate page,perpage,borough
 app
-.route('/api/search')
-.get((req,res)=>{
-	res.render('restaurantseach',{
-		layout: 'main.hbs',
-	})
-})
-.post((req,res)=>{
-	let page = req.body.page;
-	let perPage = req.body.perPage;
-	let borough = req.body.borough;
+  .route("/api/search")
+  .get((req, res) => {
+    res.render("restaurantseach", {
+      layout: "main.hbs",
+    });
+  })
+  .post((req, res) => {
+    let page = req.body.page;
+    let perPage = req.body.perPage;
+    let borough = req.body.borough;
 
-	RestaurantModel.find(function (err, restaurants) {
-		if (err) res.send(err);
-		res.render('restaurant', {
-			layout: 'main.hbs',
-			data: restaurants,
-		});
-	})
-		.skip(page * perPage)
-		.limit(perPage)
-		.lean();
-});
+    RestaurantModel.find(function (err, restaurants) {
+      if (err) res.send(err);
+      res.render("restaurant", {
+        layout: "main.hbs",
+        data: restaurants,
+      });
+    })
+      .skip(page * perPage)
+      .limit(perPage)
+      .lean();
+  });
 
-app.post('/api/restaurants', async function (req, res) {
-	console.log(req.body);
-  if (!req.body ){
-    res.sendStatus(400)
-    res.json({message: 'There is no data inputed'});
-  }else{
-	await RestaurantModel.create( {
-		address: {
-			building: req.body.building,
-			coord : [(req.body.coordx) , (req.body.coordy)],
-			street: req.query.street,
-			zipcode: req.query.zipcode
-		},
-		borough: req.body.borough,
-		cuisine: req.body.cuisine,
-		grades: [{
-			date: req.body.date,
-			grade: req.body.grade,
-			score: req.body.score
-		}],
-		name: req.body.name,
-		restaurant_id: req.body.restaurant_id
-	}),function (err, addedRestaurant) {
-		if (err) res.send(err);
-	
-	console.log(`${addedRestaurant.name}` +'has been added')
-	RestaurantModel.findById(addedRestaurant.name, function (err,restaurant){
-		if (err) res.send(err);
+app.post("/api/restaurants", async function (req, res) {
+  console.log(req.body);
+  if (!req.body) {
+    res.sendStatus(400);
+    res.json({ message: "There is no data inputed" });
+  } else {
+    await RestaurantModel.create({
+      address: {
+        building: req.body.building,
+        coord: [req.body.coordx, req.body.coordy],
+        street: req.query.street,
+        zipcode: req.query.zipcode,
+      },
+      borough: req.body.borough,
+      cuisine: req.body.cuisine,
+      grades: [
+        {
+          date: req.body.date,
+          grade: req.body.grade,
+          score: req.body.score,
+        },
+      ],
+      name: req.body.name,
+      restaurant_id: req.body.restaurant_id,
+    }),
+      function (err, addedRestaurant) {
+        if (err) res.send(err);
 
-        res.render('restaurant', {
-			layout: 'main.hbs',
-			data: restaurant,
-		});
-	})
-	.skip(1)
-	.limit(1)
-	.lean();
+        console.log(`${addedRestaurant.name}` + "has been added");
+        RestaurantModel.findById(
+          addedRestaurant.name,
+          function (err, restaurant) {
+            if (err) res.send(err);
 
-
-	}};
+            res.render("restaurant", {
+              layout: "main.hbs",
+              data: restaurant,
+            });
+          }
+        )
+          .skip(1)
+          .limit(1)
+          .lean();
+      };
+  }
 });
 
 //put  restaurant based on the _id number
-app.put('/api/restaurants/:restaurantId', function (req, res) {
-	// create mongose method to update an existing record into collection
-	let id = req.params.restaurantId;
-	var data = {
-		address: [req.body.address],
-		building: req.body.building,
-		coord: [req.body.coord],
-		street: req.body.street,
-		zipcode: req.body.zipcode,
-		borough: req.body.borough,
-		cuisine: req.body.cuisine,
-		grades: [req.body.grades],
-		name: req.body.name,
-		restaurant_id: req.body.restaurant_id,
-	};
+app.put("/api/restaurants/:restaurantId", function (req, res) {
+  // create mongose method to update an existing record into collection
+  let id = req.params.restaurantId;
+  var data = {
+    address: [req.body.address],
+    building: req.body.building,
+    coord: [req.body.coord],
+    street: req.body.street,
+    zipcode: req.body.zipcode,
+    borough: req.body.borough,
+    cuisine: req.body.cuisine,
+    grades: [req.body.grades],
+    name: req.body.name,
+    restaurant_id: req.body.restaurant_id,
+  };
 
-	// save the user
-	Restaurant.findByIdAndUpdate(id, data, function (err, restaurant) {
-		if (err) throw err;
+  // save the user
+  Restaurant.findByIdAndUpdate(id, data, function (err, restaurant) {
+    if (err) throw err;
 
-		res.send('Successfully updated restaurants - ' + restaurant.name);
-	});
+    res.send("Successfully updated restaurants - " + restaurant.name);
+  });
 });
 
 //Put from restaurant detailswebpage
 // app.put("/api/restaurants/:restaurantiId", async function (req, res) {
 //   let id = req.params.restaurantiId;
 //   console.log(`Query ${req.query}`);
-  
+
 //   console.log(`request to update ${id}`);
 
 //   const restaurant = await restaurantModels.RestaurantModel.findById(id).exec();
@@ -245,7 +249,7 @@ app.get("/api/restaurants/:id", async function (req, res) {
     //console.log(`Fetching  Completed, rendering hbs ${Date.now()}`);
 
     const isCallerCreator = isCreator(req, restaurant);
-    
+
     const composedData = {
       name: `${restaurant.name}`,
       thumb: thumbPath,
@@ -285,7 +289,6 @@ app.get("/api/restaurants/:id", async function (req, res) {
   }
 });
 
-
 //app.use(`/.netlify/functions/api`, router);
 
 const isCreator = (req, restaurant) => {
@@ -301,4 +304,4 @@ function getRandomInt(max) {
 }
 
 app.listen(port);
-console.log('App listening on port : ' + port);
+console.log("App listening on port : " + port);
